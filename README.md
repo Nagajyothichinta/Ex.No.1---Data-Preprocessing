@@ -34,42 +34,132 @@ Splitting the data into test and train
 
 ## PROGRAM:
 ```
-
 import pandas as pd
-df=pd.read_csv("/content/Churn_Modelling.csv")
-df.head()
+import numpy as np
+
+df = pd.read_csv("/content/drive/MyDrive/Colab Notebooks/Semester 3/19AI411 - Neural Networks/Churn_Modelling.csv")
+df
+
 df.isnull().sum()
-df.drop(["RowNumber","Age","Gender","Geography","Surname"],inplace=True,axis=1)
-print(df)
-x=df.iloc[:,:-1].values
-y=df.iloc[:,-1].values
-print(x)
-print(y)
-from sklearn.preprocessing import MinMaxScaler
-scaler = MinMaxScaler()
-df1 = pd.DataFrame(scaler.fit_transform(df))
-print(df1)
-from sklearn.model_selection import train_test_split
-xtrain,ytrain,xtest,ytest=train_test_split(x,y,test_size=0.2,random_state=2)
-print(xtrain)
-print(len(xtrain))
-print(xtest)
-print(len(xtest))
+
+#Check for Duplicate Values
+df.duplicated()
+
+df.describe()
+
+#Detect the Outliers
+# Outliers are any abnormal values going beyond
+df['Exited'].describe()
+
+""" Normalize the data - There are range of values in different columns of x are different. 
+
+To get a correct ne plot the data of x between 0 and 1 
+
+LabelEncoder can be used to normalize labels.
+It can also be used to transform non-numerical labels to numerical labels.
+"""
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+
+df1 = df.copy()
+
+df1["Geography"] = le.fit_transform(df1["Geography"])
+df1["Gender"] = le.fit_transform(df1["Gender"])
+
+'''
+MinMaxScaler - Transform features by scaling each feature to a given range. 
+When we normalize the dataset it brings the value of all the features between 0 and 1 so that all the columns are in the same range, and thus there is no dominant feature.'''
+
 from sklearn.preprocessing import StandardScaler
-sc = StandardScaler()
-df1 = sc.fit_transform(df)
-print(df1)
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+
+df1[["CreditScore","Geography","Age","Tenure","Balance","NumOfProducts","EstimatedSalary"]] = pd.DataFrame(scaler.fit_transform(df1[["CreditScore","Geography","Age","Tenure","Balance","NumOfProducts","EstimatedSalary"]]))
+
+df1
+
+df1.describe()
+
+# Since values like Row Number, Customer Id and surname  doesn't affect the output y(Exited).
+#So those are not considered in the x values
+X = df1[["CreditScore","Geography","Gender","Age","Tenure","Balance","NumOfProducts","HasCrCard","IsActiveMember","EstimatedSalary"]].values
+print(X)
+
+y = df1.iloc[:,-1].values
+print(y)
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+print(X_train)
+print("Size of X_train: ",len(X_train))
+
+print(X_test)
+print("Size of X_test: ",len(X_test))
+
+X_train.shape
 
 ```
 ## OUTPUT:
 
-![output](./1.jpeg)
+Dataset
 
-![output](./2.jpeg)
+![output](./1.png)
 
-![output](./3.jpeg)
+checking for null values
 
-![output](./4.jpeg)
+![output](./2.png)
+
+checking for duplicate values
+
+![output](./3.png)
+
+describing data
+
+![output](./5.png)
+
+checking for outliers in exicted column
+
+![output](./6.png)
+
+normalized dataset
+
+![output](./7.png)
+
+describing normalized dataset
+
+![output](./8.png)
+
+x-values
+
+![output](./9.png)
+
+y-value
+
+![output](./10.png)
+
+x_train values
+
+![output](./11.png)
+
+x_train size
+
+![output](./12.png)
+
+x_test values
+
+![output](./13.png)
+
+x_test size
+
+![output](./14.png)
+
+x_train shape
+
+![output](./15.png)
+
+
 
 ## RESULT
 Thus the above program for standardizing the given data was implemented successfully.
